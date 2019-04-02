@@ -5,10 +5,11 @@ import { MergerEto } from './etos/merger.eto';
 
 @Controller('processmanagement')
 export class ProcessmanagementController {
+  mergeTimeout = setTimeout(() => process.exit(0), 30000);
+
   @Post('/isValidInput')
   isValidInput(@Body() inputFile: InputFileEto) {
     const path: string = inputFile.path;
-    // console.log(path);
     if (path.includes('.nest')) {
       return true;
     }
@@ -17,6 +18,7 @@ export class ProcessmanagementController {
 
   @Post('/tsplugin/merge')
   merge(@Body() merger: MergerEto) {
+    clearTimeout(this.mergeTimeout);
     const patchContent: string = merger.patchContent.replace(/\\n/gm, '\n');
     const baseContent: string = merger.baseContent.replace(/\\n/gm, '\n');
     const patchOverrides: boolean = merger.patchOverrides;
@@ -28,6 +30,7 @@ export class ProcessmanagementController {
       patchOverrides,
     );
 
+    this.mergeTimeout = setTimeout(() => process.exit(0), 30000);
     return mergedCode;
   }
 
